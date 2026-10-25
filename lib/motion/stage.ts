@@ -1,14 +1,15 @@
-/* The hero stage's motion, as in v5's class Component: the intro, the hero inside the H frame, its exit into the resting H, the earth, and the nav's states.
-   02 attaches to `tick` in the next step of the build order. */
+/* The hero stage's motion, as in v5's class Component: the intro, the hero inside the H frame, its exit into the resting H, the earth, the nav's states, and 02: the two entities, the six step cards, the row's exit and the closing line. */
 import type { Engine, Progress } from "./engine";
-import { expoOut, inOut, range, smooth } from "./math";
+import { clamp, expoOut, inOut, range, smooth } from "./math";
 import { RECT, L, halvesPath, frameUW } from "./geometry";
 import { DotField } from "../gl/dot-field";
 import { MeshGradient } from "../gl/mesh-gradient";
 import { loadGlobe, type Globe } from "../globe";
 import { EXIT_DROP, EXIT_GROW, GLOBE_START_TOP, GLOBE_TOP, GRADIENT_COLORS, GRADIENT_SCALE, GRADIENT_SPEED, HERO_GRADIENT, LINE1_LIFT, LINE1_SIZE, LINE2_SIZE } from "../settings";
 
-interface StageEls { clip: HTMLElement; blur: HTMLElement; hc: HTMLElement; l1: HTMLElement | null; l2: HTMLElement | null; gw: HTMLElement | null; nav: HTMLElement | null; bg: HTMLElement | null }
+interface StageEls { clip: HTMLElement; blur: HTMLElement; hc: HTMLElement; l1: HTMLElement | null; l2: HTMLElement | null; gw: HTMLElement | null; nav: HTMLElement | null; bg: HTMLElement | null; row: HTMLElement | null; close: HTMLElement | null }
+/** When each of 02's six cards is fully up, in the stage's p (0 at P 0.30, 1 at the end). */
+const STEP_T = [0.16, 0.27, 0.38, 0.49, 0.6, 0.71];
 /** k scales the plus, m swaps the halves into the H, part/reach/hk make the two entities, f grows the H into the hero frame. */
 export interface ObjectState { k?: number; m?: number; part?: number; reach?: number; hk?: number; f: number }
 
@@ -29,6 +30,13 @@ export class StageMotion {
   private navZ: string | null = null;
   private l1Key = "";
   private l1Fs: string | null = null;
+  /** The card width the row was last laid out for; a new width lays the cards out again. */
+  private cardS: number | null = null;
+  private s2RowBottom = 0;
+  private s2Gap = 0;
+  /** How far the hero's frame has shrunk back (0–1); part of the horizon measure's key. */
+  private earthBack = 0;
+  private apexC: { k: string; off: number | null } | null = null;
   private offResize: (() => void) | null = null;
   private destroyed = false;
 
@@ -44,7 +52,7 @@ export class StageMotion {
     loadGlobe().catch(() => {});
     const gs = e.q("[data-globe-section]"); if (gs && !this.globeEntering) gs.style.top = GLOBE_TOP + "vh";
     this.fitHero();
-    this.offResize = e.onResize(() => { this.se = null; if (this.mesh) this.mesh.resize(); if (this.globe) this.globe.resize(); this.fitHero(); });
+    this.offResize = e.onResize(() => { this.se = null; this.cardS = null; if (this.mesh) this.mesh.resize(); if (this.globe) this.globe.resize(); this.fitHero(); });
     e.stageOn = true;
     if (!e.reduced) this.runIntro(); else this.finishIntro();
   }
@@ -84,7 +92,7 @@ export class StageMotion {
     const q = (s: string) => this.e.q(s);
     const clip = q("[data-obj-clip]"), blur = q("[data-obj-blur]"), hc = q("[data-hero-content]");
     if (!clip || !hc || !blur) return null;
-    return (this.se = { clip, blur, hc, l1: q("[data-line1]"), l2: q("[data-line2]"), gw: q("[data-globe-wrap]"), nav: q("[data-nav]"), bg: q("[data-stage-bg]") });
+    return (this.se = { clip, blur, hc, l1: q("[data-line1]"), l2: q("[data-line2]"), gw: q("[data-globe-wrap]"), nav: q("[data-nav]"), bg: q("[data-stage-bg]"), row: q("[data-card-row]"), close: q("[data-s2-close]") });
   }
 
   /** The hero lines at their sizes. Line 1 shrinks only when it would cross the uprights (narrower screens such as a 14" laptop). */
@@ -198,11 +206,12 @@ export class StageMotion {
     this.tickNav(ST, vh);
     const se = this.introRunning ? null : this.stageEls();
     if (se && (ST.on || this.stOn)) {
-      this.stOn = ST.on; const el = se;
+      this.stOn = ST.on; const el = se, s = this.objS(), vw = window.innerWidth;
       // hero text out (0–0.10); the frame shrinks from both sides back to the resting H (0.03–0.24); the earth grows a little with it
       const c = 1 - sm(r(P, 0, 0.1)), back = sm(r(P, 0.03, 0.24));
       const k1 = 1 - c; e.set(el.hc, "opacity", c.toFixed(3)); e.set(el.hc, "transform", "none"); e.set(el.hc, "filter", k1 > 0.01 ? `blur(${(k1 * 6).toFixed(1)}px)` : "none");
       const dis = `rgb(${Math.round(20 + 26 * k1)}, ${Math.round(23 + 85 * k1)}, ${Math.round(28 + 156 * k1)})`; [el.l1, el.l2].forEach((x) => e.set(x, "color", dis));
+      this.earthBack = back;
       // the dotted field stays: the hero's field and 02's are both on
       if (this.dots) this.dots.fade = 1;
       this.globeOp = 1; e.set(el.gw, "opacity", "1.000");
@@ -210,13 +219,101 @@ export class StageMotion {
       // into 02 the globe grows about its horizon until the arc runs off both edges, and stays through the exit
       const gsec = e.el("gsec", "[data-globe-section]"); if (gsec) e.set(gsec, "transform", `translateY(${(back * vh * (EXIT_DROP / 100)).toFixed(1)}px) scale(${(1 + (EXIT_GROW - 1) * back).toFixed(4)})`);
       e.set(el.bg, "opacity", sm(r(p, 0, 0.16)).toFixed(3));
-      // 02 (the next step of the build order) parts the H into the two entities and raises the cards from here; until then the H rests
-      this.drawObject({ k: 1, m: 1, part: 0, reach: 0, hk: 0, f: 1 - back });
+      // 02: the resting H becomes the two entities (heads rise, p 0–0.05); six cards pop up in the middle one after another; each pushes the entities further apart; after the sixth they leave the screen
+      const row = el.row, close = el.close;
+      if (!row || !close) { this.drawObject({ k: 1, m: 1, part: 0, reach: 0, hk: 0, f: 1 - back }); }
+      else {
+        const cards = e.els("scards", "[data-scard]");
+        const cw = cards[0] ? cards[0].offsetWidth : 200, gap2 = vw * 0.009, pitch = cw + gap2;
+        // the first card waits until the entities have stepped apart (g1), so it rises into an open gap instead of over them
+        const kOf = (i: number) => (i === 0 ? sm(r(p, 0.09, STEP_T[0] + 0.02)) : sm(r(p, STEP_T[i] - 0.11, STEP_T[i] + 0.02)));
+        let n = 0; for (let i = 0; i < 6; i++) n += kOf(i);
+        e.set(row, "height", "auto");
+        // exit: the whole row rises and settles under the section title; the closing line then appears under the row
+        const upK = sm(r(p, 0.8, 0.92)), hdEl = e.el("s2head", "[data-s2-head]"), rowH = row.offsetHeight || 0, rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const apexY = this.s2ApexY(vh), chS = close.offsetHeight;
+        const tb = hdEl ? hdEl.offsetTop + hdEl.offsetHeight : vh * 0.2, g = Math.max(16, (apexY - tb - rowH - chS) / 3.5);
+        // exit rhythm: title, 1.5 gaps, the row, a gap, the closing line, the same gap, the globe; the globe never moves for the row, on shorter screens the gaps shrink instead
+        const rowTop0 = vh * 0.53 - rowH / 2, rowTop1 = Math.min(rowTop0, tb + 1.5 * g);
+        e.set(row, "transform", `translate(-50%, -50%) translateY(${((rowTop1 - rowTop0) * upK).toFixed(1)}px)`);
+        this.s2RowBottom = rowTop1 + rowH; this.s2Gap = g;
+        // the card composition from the design, at whatever width six across gives: numeral height 0.62 × card width, text column right of it, height from the content
+        const cwNow = cards[0] ? cards[0].offsetWidth : 0;
+        this.cardsLive = true;
+        if (this.cardS !== cwNow) { this.cardS = cwNow; this.fitCards(cards); }
+        const exit = sm(r(p, 0.8, 0.92)) * (vw / 2 + 6 * s);
+        const hk = sm(r(p, 0, 0.05));
+        const g1 = sm(r(p, 0.05, 0.13)), base = 0.15 * s * hk + 0.45 * s * Math.max(clamp(n * 3, 0, 1), g1) + Math.max(Math.max(0, n * pitch - gap2) / 2, (g1 * cw) / 2);
+        const flush = Math.max(0, vw / 2 + 0.5 * s - base), sixth = sm(r(p, STEP_T[5] - 0.11, STEP_T[5] + 0.02));
+        const part = base + flush * sixth + exit;
+        this.drawObject({ k: 1, m: 1, part, reach: 0, hk, f: 1 - back });
+        // each card is born at the centre, between the two entities; the row spreads to make room
+        cards.forEach((m, i) => {
+          const k = kOf(i);
+          const slot = (i - (Math.max(1, n) - 1) / 2) * pitch, x = slot * k - (i - 2.5) * pitch;
+          e.set(m, "opacity", k.toFixed(3)); e.set(m, "transform", `translateX(${x.toFixed(1)}px) translateY(${((1 - k) * 24).toFixed(1)}px) scale(${(0.72 + 0.28 * k).toFixed(3)})`);
+          e.set(m, "zIndex", String(10 + Math.round(k * 10)));
+        });
+        // the closing line reveals where the cards were: centred on the row (the stage centre)
+        { const rb = this.s2RowBottom || vh * 0.6; e.set(close, "top", (rb + (this.s2Gap || rem)).toFixed(1) + "px"); }
+        const ho = sm(r(p, 0.0, 0.08));
+        e.set(hdEl, "opacity", ho.toFixed(3)); e.set(hdEl, "transform", `translateY(${((1 - ho) * 12).toFixed(1)}px)`);
+        const o = sm(r(p, 0.91, 0.97)); e.set(close, "opacity", o.toFixed(3)); e.set(close, "transform", `translateY(${((1 - o) * 14).toFixed(1)}px)`);
+      }
     }
     if (e.stageOn) {
       if (this.dots && this.dots.fade > 0.005) this.dots.render(time);
       if (this.mesh) this.mesh.render(time);
     }
+  }
+  /** The card composition from the design, at whatever width six across gives. The title gets the largest size that fits in two lines, the same on all six; the description the largest size at which its column ends level with the numeral. */
+  private fitCards(cards: HTMLElement[]): void {
+    const fits: { inner: HTMLElement; nh: number; put: (t: number, d: number) => void; ts: number }[] = [];
+    cards.forEach((cd) => {
+      const w = cd.offsetWidth; cd.style.height = "auto"; cd.style.minHeight = (w * 0.68).toFixed(1) + "px";
+      const inn = cd.querySelector<HTMLElement>("[data-cin]");
+      if (inn) { inn.style.position = "relative"; inn.style.inset = "auto"; inn.style.margin = (w * 0.05).toFixed(1) + "px"; inn.style.minHeight = (w * 0.62).toFixed(1) + "px"; }
+      const nuEl = cd.querySelector<SVGSVGElement>("[data-num]"); if (nuEl) nuEl.style.height = (w * 0.62).toFixed(1) + "px";
+      const inner = inn, nu = nuEl, h3 = cd.querySelector<HTMLElement>("h3"), pp = cd.querySelector<HTMLElement>("p"); if (!inner) return;
+      const cwid = w * 0.9, nh = w * 0.62; let nw = 0;
+      if (nu) { const vb = (nu.getAttribute("viewBox") || "0 0 157 268").split(" ").map(Number); nw = nh * (vb[2] / vb[3]); }
+      const left = Math.round(nw + cwid * 0.03);
+      // title: the largest size that fits in two lines; description: the largest size at which the column ends level with the numeral
+      const span = h3 ? h3.querySelector<HTMLElement>("span") || (() => { const sp = document.createElement("span"); sp.textContent = h3.textContent; h3.textContent = ""; h3.appendChild(sp); return sp; })() : null;
+      let ts = 14, ds = 10;
+      const put = () => {
+        if (h3) { h3.style.marginLeft = left + "px"; h3.style.fontSize = ts.toFixed(1) + "px"; h3.style.minHeight = "0"; h3.style.lineHeight = "1.02"; h3.style.alignItems = "flex-start"; }
+        if (pp) { pp.style.marginLeft = left + "px"; pp.style.fontSize = ds.toFixed(1) + "px"; pp.style.lineHeight = "1.35"; }
+      };
+      put();
+      if (h3) { h3.style.minWidth = "0"; h3.style.overflowWrap = "normal"; }
+      if (h3 && span) { span.style.display = "inline-block"; span.style.maxWidth = "100%"; for (let k = 0; k < 40; k++) { ts += 1; put(); if (span.offsetHeight > ts * 1.02 * 2 + 2 || h3.scrollWidth > h3.clientWidth || ts > 44) { ts -= 1; put(); break; } } }
+      inner.style.minHeight = nh.toFixed(1) + "px";
+      fits.push({ inner, nh, put: (t, d) => { ts = t; ds = d; put(); }, ts });
+    });
+    // one title size for the row: the smallest of the six, so neighbours read as one system
+    const sorted = fits.map((f) => f.ts).sort((a, b) => a - b);
+    const shared = Math.max(14, Math.min(...sorted));
+    fits.forEach((f) => { const cap = Math.max(10.5, Math.min(14, shared / 1.9)); let d = 10; f.put(shared, d); for (let k = 0; k < 40; k++) { d += 0.5; f.put(shared, d); if (f.inner.scrollHeight > f.nh + 1 || d > cap) { d -= 0.5; f.put(shared, d); break; } } });
+  }
+  /** The globe's horizon on screen (the top of the disc), measured from the map itself. */
+  private s2ApexY(vh: number): number {
+    const m = this.globe ? this.globe.map : null; if (!m || (m.isStyleLoaded && !m.isStyleLoaded())) return vh * 0.72;
+    let cc: { lng: number; lat: number }; try { cc = m.getCenter(); } catch { return vh * 0.72; }
+    const key = window.innerWidth + "x" + vh + ":" + this.earthBack.toFixed(2) + ":" + cc.lng.toFixed(1) + "," + cc.lat.toFixed(1) + ":" + m.getZoom().toFixed(2);
+    // the disc's top inside the map is cached per view; where the map sits on screen is read fresh every call, so a globe still settling (its entry, a scroll back from 03) never leaves a stale horizon behind
+    if (!this.apexC || this.apexC.k !== key) {
+      let off: number | null = null;
+      try {
+        const ctr = m.getCenter(), c = m.project(ctr); let R = 0;
+        for (let d = 2; d <= 90; d += 2) { const lat = ctr.lat + d; if (lat > 89.5) break; const pt = m.project([ctr.lng, lat]); if (isFinite(pt.y) && Math.abs(pt.x - c.x) < 40) R = Math.max(R, c.y - pt.y); }
+        if (R > 0) off = c.y - R;
+      } catch {}
+      this.apexC = { k: key, off };
+    }
+    if (this.apexC.off == null) return vh * 0.72;
+    // measured against the stage, not the screen: when the stage scrolls away the row and the closing line travel with it instead of sliding up
+    try { const ct = m.getContainer(), rc = ct.getBoundingClientRect(), k = rc.height / (ct.offsetHeight || rc.height || 1), st = this.e.el("stagesec", "[data-stage-wrap] > section"), s0 = st ? st.getBoundingClientRect().top : 0; return Math.min(vh * 0.95, Math.max(vh * 0.5, rc.top - s0 + this.apexC.off * k)); } catch { return vh * 0.72; }
   }
   /** The nav: inside the frame in the hero and the close; edge to edge on glass through 02–03 and 05–06; gone from the start of 03 → 04 until 05. */
   private tickNav(ST: Progress, vh: number): void {

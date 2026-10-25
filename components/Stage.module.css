@@ -49,3 +49,40 @@
 }
 .skip:hover { color: #14171C; }
 .skip[hidden] { display: none; }
+
+/* 02: the card row at the stage centre; the cards' composition (numeral height, text column, type sizes) is measured and written by the motion engine */
+.row {
+  position: absolute; left: 50%; top: 53%; transform: translate(-50%, -50%);
+  display: flex; align-items: stretch; gap: 0.9vw;
+  will-change: transform; pointer-events: none;
+}
+.card {
+  position: relative; width: calc((100vw - 5.4vw - 4.5vw) / 6); box-sizing: border-box;
+  background: linear-gradient(225deg, rgba(46, 108, 184, 0.55) 0%, rgba(52, 179, 165, 0.34) 32%, rgba(255, 255, 255, 0) 68%), #FFFFFF;
+  box-shadow: 0 24px 60px rgba(20, 23, 28, 0.10);
+  display: block; will-change: transform, opacity;
+}
+:global(html[data-js]) .card { opacity: 0; transform: scale(0.7); }
+.cin { position: absolute; inset: 0; margin: 6.5%; display: flex; flex-direction: column; }
+.num { position: absolute; left: 0; top: 0; height: 100%; width: auto; opacity: 0.5; pointer-events: none; }
+.cardTitle {
+  position: relative; margin: 0; min-height: 27.4%; display: flex; align-items: center;
+  font-family: var(--fd); font-weight: 500; letter-spacing: -0.025em; line-height: 1.02; color: #14171C;
+}
+.cardText { position: relative; margin: auto 0 0; padding-top: 3%; font-family: var(--fs); line-height: 1.4; color: #3F444B; text-wrap: pretty; }
+
+.s2Head {
+  position: absolute; left: 2.7vw; right: 2.7vw; top: 11rem;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.75rem;
+}
+:global(html[data-js]) .s2Head { opacity: 0; transform: translateY(12px); }
+.s2Heading {
+  margin: 0; font-family: var(--fs); font-weight: 500; letter-spacing: -0.03em;
+  font-size: clamp(1.75rem, 3vw, 3.25rem); line-height: 1.05; color: #14171C; text-wrap: balance;
+}
+.s2Close {
+  position: absolute; left: 0; right: 0; top: 70vh; pointer-events: none; margin: 0 auto; max-width: 30ch; padding: 0 1rem; text-align: center;
+  font-family: var(--fd); font-weight: var(--fdw); letter-spacing: var(--fdt);
+  font-size: clamp(1.5rem, 4.2vh, 3rem); line-height: 1.15; color: #14171C; text-wrap: balance;
+}
+:global(html[data-js]) .s2Close { opacity: 0; transform: translateY(14px); }
