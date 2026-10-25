@@ -109,6 +109,7 @@ export class Engine {
     this.sdots.destroy();
     this.s4.destroy();
     this.t45.destroy();
+    this.h.destroy();
     this.resizeHooks.clear();
     this.ss.destroy();
     document.documentElement.style.overflow = "";
@@ -195,6 +196,6 @@ export class Engine {
     this.stage.tick(time);
     this.s3.tick(time);
     this.sdots.tick(time);
-    this.h.tick();
+    this.h.tick(time);
   }
 }

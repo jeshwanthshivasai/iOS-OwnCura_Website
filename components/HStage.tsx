@@ -1,9 +1,12 @@
 import { Fragment } from "react";
+import Valuation from "./Valuation";
 import styles from "./HStage.module.css";
 
 /* 05, 06 and the close share one pinned stage (v5 [data-h-wrap], 1005vh, pulled up 265vh under the end of 04; 840vh and not pulled up with reduced motion).
    05: a gradient square, with a larger, left-aligned title over the statement (s5Square on). During 04 → 05 the stage rises under the veil and pins, and the gradient pulls back into the square.
-   Its words start unfilled and fill word by word as the stage scrolls (lib/motion/h.ts). 06 and the close follow in the build order. */
+   Its words start unfilled and fill word by word as the stage scrolls (lib/motion/h.ts).
+   05 → 06: 05's square grows into a full-bleed living gradient, 06 takes 05's place underneath, and the field bends and sinks until it rests as the dome, 06's globe.
+   06: the H measures the practice; the doctor fills in a sentence and the range tightens as the H's uprights close in. The close and the footer follow in the build order. */
 
 // the words, with the claims that take the brand gradient when they fill (v5 data-tclaim / data-claim)
 const TITLE: [string, boolean][] = [["What", false], ["we", false], ["own", true], ["and", false], ["run.", true]];
@@ -31,6 +34,29 @@ export default function HStage() {
             <h2 data-s5-h2="" className={styles.heading}><Words words={TITLE} attr="data-tw" claimAttr="data-tclaim" word={styles.tw} claim={styles.claim} /></h2>
           </div>
           <p data-stmt="" className={styles.stmt}><Words words={STATEMENT} attr="data-sw" claimAttr="data-claim" word={styles.sw} claim={styles.claim} /></p>
+        </div>
+        {/* hidden inline from the first paint, as in v5: the dot field skips a canvas only by its inline visibility, and 05 → 06 shows this one at q 0.435 */}
+        <canvas data-sdots="06" aria-hidden="true" className={styles.sdots} style={{ visibility: "hidden" }} />
+        {/* 06 is the designer's 3a frame (OwnCura 06 Study v2) at 1920 × 958, scaled to fit and centred. The H is drawn by the frame layer below; the figures ride its uprights */}
+        <div id="valuation" data-p6="" className={styles.p6}>
+          <Valuation />
+        </div>
+        {/* the H of 06 (and, in the close, the hero's frame): the designer's still gradient at rest, the living one as it grows */}
+        <div data-close-frame="" aria-hidden="true" className={styles.closeFrame}><canvas data-close-mesh="" className={styles.fill} /><div data-cf-lin="" className={styles.cfLin} /></div>
+        {/* 05 → 06: 05's square grows into a full-bleed living gradient, then bends and sinks to rest as 06's dome */}
+        <div data-dome6="" aria-hidden="true" className={styles.dome6}><canvas data-dome6-mesh="" className={styles.fill} /><div data-dome6-flat="" className={styles.dome6Flat} /><div data-dome6-veil="" className={styles.dome6Veil} /></div>
+        <div data-f6b="" className={styles.f6b}>
+          {/* the owner button settles on the dome's centre; the panel it opens comes with the close (step 10) */}
+          <div data-olink="" className={styles.olink}>
+            <button type="button" data-owner-link="" className={styles.ownerBtn}>
+              <span className={styles.ownerLabel}>Not an owner yet?</span>
+              <span aria-hidden="true" className={styles.ownerPlusBox}>
+                <span className={styles.ownerPlus}>
+                  <span className={styles.plusH} /><span data-pl="" data-d="6" className={styles.plusV} /><span data-pr="" data-d="6" className={styles.plusV} />
+                </span>
+              </span>
+            </button>
+          </div>
         </div>
       </section>
     </div>

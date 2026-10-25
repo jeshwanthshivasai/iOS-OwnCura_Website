@@ -1,0 +1,59 @@
+/* v5's 06 frame (lines 374-379), value for value; the engine writes the sizes and places that follow the screen and the range. */
+.frame { position: absolute; left: 0; top: 0; width: 1920px; height: 958px; transform-origin: 0 0; }
+.titleRow { position: absolute; left: 0; right: 0; top: 150px; display: flex; justify-content: center; align-items: center; gap: 20.16px; }
+.square { width: 72px; height: 72px; flex: none; background: linear-gradient(135deg, #2E6CB8, #34B3A5); }
+.title { margin: 0; white-space: nowrap; font-family: var(--fs); font-weight: 500; font-size: 96px; line-height: 1.05; letter-spacing: -0.03em; color: #14171C; }
+.tw { color: inherit; }
+.claim { background: linear-gradient(100deg, #2E6CB8, #34B3A5); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+:global(html[data-js]) .tw { color: #C9CCC7; }
+:global(html[data-js]) .claim { -webkit-text-fill-color: #C9CCC7; }
+
+.sentence {
+  position: absolute; z-index: 2; left: 0; right: 0; top: 315px; margin: 0; text-align: center;
+  font-family: var(--fs); font-weight: 500; font-size: 37.7px; line-height: 1.6; letter-spacing: -0.01em; color: #14171C;
+}
+.line { display: block; width: max-content; margin: 0 auto; white-space: nowrap; }
+.field {
+  border: none; border-radius: 0; background: transparent; font: inherit; color: #2E6CB8; padding: 0 0.04em; outline: none;
+  box-sizing: content-box; border-bottom: 2px solid #2E6CB8;
+}
+.field:focus { border-bottom-color: #14171C; color: #14171C; }
+.dashed { border-bottom-style: dashed; }
+.dashed:focus { border-bottom-style: solid; }
+.centred { text-align: center; }
+
+.specWrap { position: relative; display: inline-block; }
+.specBtn {
+  display: inline-flex; align-items: center; gap: 0.22em; margin: 0; padding: 0 0.04em; border: none; border-radius: 0; border-bottom: 2px solid #2E6CB8;
+  background: transparent; font: inherit; line-height: 1.1; color: #2E6CB8; cursor: pointer; outline: none;
+}
+.specBtn:hover, .specBtn:focus { color: #14171C; border-bottom-color: #14171C; }
+.chevron { display: inline-block; width: 0.26em; height: 0.26em; border-right: 0.075em solid currentColor; border-bottom: 0.075em solid currentColor; transition: transform .45s cubic-bezier(.22, 1, .36, 1); }
+.list {
+  position: absolute; left: -0.5em; top: calc(100% + 0.3em); z-index: 6; display: grid; padding: 0.3em 0; background: #FFFFFF;
+  box-shadow: 0 0.6em 1.6em rgba(20, 23, 28, 0.14), 0 0 0 1px rgba(20, 23, 28, 0.06); font-size: 0.5em; line-height: 1.2; text-align: left;
+}
+.option {
+  display: flex; align-items: center; gap: 0.65em; margin: 0; padding: 0.6em 1.4em 0.6em 1em; border: 0; background: transparent; font: inherit; font-weight: 500;
+  letter-spacing: -0.01em; color: #14171C; white-space: nowrap; text-align: left; cursor: pointer;
+}
+.option:hover { background: #F1F1EE; }
+.mark { width: 0.45em; height: 0.45em; flex: none; }
+
+.stepper { display: inline-flex; align-items: center; gap: 0.3em; vertical-align: 0.08em; white-space: nowrap; }
+.stepBtn {
+  width: 1.15em; height: 1.15em; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(20, 23, 28, 0.22); background: #FFFFFF;
+  padding: 0; font: inherit; font-size: 0.62em; line-height: 1; color: #3F444B; transition: border-color .3s, color .3s;
+}
+.stepBtn:hover { border-color: #14171C; color: #14171C; }
+.count { color: #2E6CB8; border-bottom: 2px solid #2E6CB8; min-width: 1ch; text-align: center; line-height: 1.1; }
+
+.figure {
+  position: absolute; top: 526.7px; font-family: var(--fs); font-weight: 500; font-size: 72px; line-height: 1; letter-spacing: -0.03em; color: #14171C;
+  white-space: nowrap; text-box: trim-both cap alphabetic;
+}
+.lo { left: 194px; }
+.hi { left: 1476px; }
+.note {
+  position: absolute; left: 561px; top: 594px; width: 796px; margin: 0; text-align: center; font-family: var(--fs); font-size: 15px; line-height: 1.55; color: #3F444B; text-wrap: balance;
+}

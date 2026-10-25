@@ -25,3 +25,22 @@
 .claim { background: linear-gradient(100deg, #2E6CB8, #34B3A5); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 :global(html[data-js]) .tw, :global(html[data-js]) .stmt { color: #C9CCC7; }
 :global(html[data-js]) .claim { -webkit-text-fill-color: #C9CCC7; }
+
+/* 06 and 05 → 06 (v5 lines 371-386), value for value */
+.p6 { position: absolute; inset: 0; pointer-events: none; }
+:global(html[data-js]) .p6 { visibility: hidden; }
+.fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.closeFrame { position: absolute; inset: 0; clip-path: inset(100%); pointer-events: none; }
+.cfLin { position: absolute; inset: 0; background: linear-gradient(100deg, #2E6CB8, #34B3A5) 0 0 / 100% 100% no-repeat; }
+.dome6 { position: absolute; left: 0; right: 0; top: 0; height: 150%; visibility: hidden; pointer-events: none; will-change: transform; }
+.dome6Flat { position: absolute; left: 0; top: 0; width: 0; height: 0; background: linear-gradient(135deg, #2E6CB8, #34B3A5); opacity: 0; }
+.dome6Veil { position: absolute; left: 0; right: 0; top: 0; height: 28%; background: linear-gradient(180deg, rgba(248, 248, 246, 0.62) 0%, rgba(248, 248, 246, 0.28) 30%, rgba(248, 248, 246, 0) 64%); }
+.f6b { position: absolute; left: 0; top: 0; width: 1920px; height: 958px; transform-origin: 0 0; pointer-events: none; }
+.olink { position: absolute; left: 0; right: 0; top: 804px; display: flex; justify-content: center; pointer-events: none; }
+:global(html[data-js]) .olink { opacity: 0; }
+.ownerBtn { pointer-events: none; display: flex; align-items: stretch; height: 52px; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.ownerLabel { display: inline-flex; align-items: center; padding: 0 24px; background: #14171C; color: #F8F8F6; font-family: var(--fs); font-weight: 600; font-size: 19px; letter-spacing: -0.01em; white-space: nowrap; }
+.ownerPlusBox { width: 52px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: #F8F8F6; }
+.ownerPlus { position: relative; width: 14px; height: 14px; transform: rotate(0deg); transition: transform .5s cubic-bezier(.87, 0, .13, 1); }
+.plusH { position: absolute; left: 0; top: 6px; width: 14px; height: 2px; background: #14171C; }
+.plusV { position: absolute; left: 6px; top: 0; width: 2px; height: 14px; background: #14171C; transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
