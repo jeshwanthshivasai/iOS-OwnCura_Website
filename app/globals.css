@@ -1,0 +1,47 @@
+/* OwnCura: the global stylesheet. The rules are v5's <style> block; the tokens are README › Design tokens, with v5's own (--bg, --brand-from, --brand-to, --fd, --fdw, --fdt, --fb, --fm). */
+
+:root {
+  /* colour */
+  --page: #F8F8F6;
+  --ink: #14171C;
+  --blue: #2E6CB8;
+  --teal: #34B3A5;
+  --small: #5A5F66;
+  --bg: #ECEDEA;
+  --brand-from: #2E6CB8;
+  --brand-to: #34B3A5;
+  /* the living gradient's four colours (warm tint on) */
+  --grad-1: #2E6CB8;
+  --grad-2: #34B3A5;
+  --grad-3: #BFD9F0;
+  --grad-4: #E9E2D3;
+
+  /* type: the display face, the body face, the mono labels, the main face */
+  --fd: var(--font-instrument-serif), Georgia, serif;
+  --fdw: 400;
+  --fdt: -0.025em;
+  --fb: var(--font-plex-sans), system-ui, sans-serif;
+  --fm: var(--font-plex-mono), ui-monospace, monospace;
+  --fs: var(--font-schibsted), system-ui, sans-serif;
+
+  /* motion */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --ease-2: cubic-bezier(.87, 0, .13, 1);
+}
+
+html, body { margin: 0; background: #F8F8F6; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: #2E6CB8; }
+::selection { background: #2E6CB8; color: #FFFFFF; }
+:focus-visible { outline: 2px solid #2E6CB8; outline-offset: 3px; border-radius: 2px; }
+input, select, button { font: inherit; }
+@keyframes ocPapers { 0% { transform: translateX(0); opacity: 0; } 12% { opacity: 1; } 100% { transform: translateX(60px); opacity: 0; } }
+@keyframes ocGlow { 0% { transform: translate(-10%, -6%) scale(1); } 50% { transform: translate(8%, 6%) scale(1.15); } 100% { transform: translate(-10%, -6%) scale(1); } }
+[data-pl]::-webkit-scrollbar, [data-pr]::-webkit-scrollbar { display: none; width: 0; height: 0; }
+@keyframes ocFlow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+/* the globe's library styles must load before this sheet, so these three win by source order as they do in v5 */
+.maplibregl-ctrl-top-right { display: none; }
+.maplibregl-canvas-container.maplibregl-interactive { cursor: default; }
+.maplibregl-canvas { outline: none; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

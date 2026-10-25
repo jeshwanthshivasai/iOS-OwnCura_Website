@@ -1,0 +1,35 @@
+{
+  "name": "owncura-website",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OwnCura's website: the ownership infrastructure for American healthcare practices.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "reference": "serve handoff/reference -l 3001",
+    "compare": "node tools/compare/screens.mjs",
+    "compare:helpers": "node tools/compare/helpers.mjs"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "esbuild": "0.28.2",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.3",
+    "playwright": "1.64.1",
+    "serve": "^14.2.0",
+    "typescript": "5.9.3"
+  }
+}
