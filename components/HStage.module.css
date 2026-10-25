@@ -1,0 +1,27 @@
+/* v5's 05 markup, value for value, with the square title's settings (s5Square on) applied as v5's applyToggles applies them.
+   The words' unfilled grey applies only once JavaScript runs (html[data-js]): without it they read in ink, as filled. */
+.wrap { position: relative; margin-top: -265vh; height: 1005vh; background: #F8F8F6; }
+/* with reduced motion 04 → 05 is off: the stage is shorter and not pulled up */
+@media (prefers-reduced-motion: reduce) { .wrap { margin-top: 0; height: 840vh; } }
+.stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: #F8F8F6; }
+.p5 { position: absolute; inset: 0; will-change: transform; pointer-events: none; }
+.sdots { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; display: none; pointer-events: none; }
+
+.title {
+  position: absolute; left: 10.4vw; right: 10.4vw; top: 11rem;
+  display: flex; justify-content: flex-start; align-items: center; gap: calc(clamp(2rem, 5vw, 6rem) * 0.21); text-align: left;
+}
+.square { display: block; flex: none; width: calc(clamp(2rem, 5vw, 6rem) * 0.75); height: calc(clamp(2rem, 5vw, 6rem) * 0.75); background: linear-gradient(135deg, #2E6CB8, #34B3A5); }
+.heading {
+  margin: 0; font-family: var(--fs); font-weight: 500; letter-spacing: -0.03em; font-size: clamp(2rem, 5vw, 6rem);
+  line-height: 1.05; color: #14171C; text-wrap: balance;
+}
+.stmt {
+  position: absolute; left: 10.4vw; right: 10.4vw; top: calc(11rem + clamp(2rem, 5vw, 6rem) * 1.05 + 2.2vw); margin: 0;
+  font-family: var(--fs); font-weight: 500; font-size: clamp(1.75rem, 3.3vw, 4rem); line-height: 1.16; letter-spacing: -0.02em;
+  color: #14171C; text-wrap: pretty;
+}
+.tw, .sw { color: inherit; }
+.claim { background: linear-gradient(100deg, #2E6CB8, #34B3A5); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+:global(html[data-js]) .tw, :global(html[data-js]) .stmt { color: #C9CCC7; }
+:global(html[data-js]) .claim { -webkit-text-fill-color: #C9CCC7; }

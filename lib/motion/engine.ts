@@ -5,6 +5,8 @@ import { SmoothScroll } from "./smooth-scroll";
 import { StageMotion } from "./stage";
 import { S3Motion } from "./s3";
 import { S4Motion } from "./s4";
+import { T45Motion } from "./t45";
+import { HMotion } from "./h";
 import { SectionDots } from "./sdots";
 
 export interface Progress {
@@ -24,7 +26,7 @@ export class Engine {
   ss: SmoothScroll;
   /** The faces for measuring text on a canvas, read from the page's tokens at boot: the display face (--fd) and Schibsted Grotesk (--fs). */
   fonts = { fd: "'Instrument Serif', Georgia, serif", fs: "'Schibsted Grotesk', system-ui, sans-serif" };
-  /** 04 → 05: the extra hold at the end of 04 (3vh) and the pull-up it gives the next stage (1.65vh). Written by the transition each frame, read by 04, the nav and the scroll anchors. */
+  /** 04 → 05: the extra hold at the end of 04 (3 viewport heights, 300vh) and the wait it gives the next stage (1.65 viewport heights, 165vh), in px. Written by the transition at the start of each frame, read by 04, the nav and the scroll anchors. */
   t45Ex = 0;
   t45D = 0;
   /** The hero stage is on screen; its canvases render only then. */
@@ -37,6 +39,10 @@ export class Engine {
   readonly sdots: SectionDots;
   /** 04: your four options. */
   readonly s4: S4Motion;
+  /** 04 → 05. */
+  readonly t45: T45Motion;
+  /** The 05-to-close stage. */
+  readonly h: HMotion;
 
   private cache: Record<string, HTMLElement | HTMLElement[] | null> = {};
   private readonly written = new WeakMap<HTMLElement, Record<string, string>>();
@@ -72,6 +78,8 @@ export class Engine {
     this.s3 = new S3Motion(this);
     this.sdots = new SectionDots(this);
     this.s4 = new S4Motion(this);
+    this.t45 = new T45Motion(this);
+    this.h = new HMotion(this);
   }
 
   start(): void {
@@ -89,6 +97,7 @@ export class Engine {
     this.raf = requestAnimationFrame(loop);
     this.stage.boot();
     this.s4.boot();
+    this.h.boot();
   }
 
   destroy(): void {
@@ -99,6 +108,7 @@ export class Engine {
     this.s3.destroy();
     this.sdots.destroy();
     this.s4.destroy();
+    this.t45.destroy();
     this.resizeHooks.clear();
     this.ss.destroy();
     document.documentElement.style.overflow = "";
@@ -179,12 +189,12 @@ export class Engine {
   // ---------- per frame ----------
   /** The scroll choreography. Each section of the README's build order adds its part here, in page order. */
   tick(time: number): void {
-    // 04 → 05 (setting A, off with reduced motion) holds 300vh at the end of 04 and pulls the next stage up 165vh; set first each frame, as v5's t45 does
-    const vh = window.innerHeight; this.t45Ex = this.reduced ? 0 : 3 * vh; this.t45D = this.reduced ? 0 : 1.65 * vh;
-    // as in v5: the reveal words are placed before the stages read them
+    // as in v5: 04 → 05 runs first (it also sets the hold's length that the rest reads), then the reveal words
+    this.t45.tick(time);
     this.s3.placeWords();
     this.stage.tick(time);
     this.s3.tick(time);
     this.sdots.tick(time);
+    this.h.tick();
   }
 }

@@ -1,3 +1,5 @@
+import Handover from "@/components/Handover";
+import HStage from "@/components/HStage";
 import Nav from "@/components/Nav";
 import Options from "@/components/Options";
 import Site from "@/components/Site";
@@ -8,10 +10,12 @@ import Why from "@/components/Why";
 export default function Page() {
   return (
     <Site>
+      <Handover />
       <Nav />
       <Stage />
       <Why />
       <Options />
+      <HStage />
     </Site>
   );
 }

@@ -32,6 +32,8 @@ export class S4Motion {
   private pos = 0;
   private rOn = false;
   private geo: Geo | null = null;
+  /** The 4's resting geometry (its left edge, top, scale), for 04 → 05. */
+  get geometry(): Geo | null { return this.geo; }
   private lc: { th: number; gp: number; L0: number; W: number; H: number; T: number; B: number; C: number[][]; CR: number[]; lays: Lay[][]; s: number } | null = null;
   private lastD = "";
   private readonly ac = new AbortController();
