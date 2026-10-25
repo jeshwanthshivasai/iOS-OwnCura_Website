@@ -168,6 +168,8 @@ export class Engine {
   // ---------- per frame ----------
   /** The scroll choreography. Each section of the README's build order adds its part here, in page order. */
   tick(time: number): void {
+    // as in v5: the reveal words are placed before the stages read them
+    this.s3.placeWords();
     this.stage.tick(time);
     this.s3.tick(time);
     this.sdots.tick(time);

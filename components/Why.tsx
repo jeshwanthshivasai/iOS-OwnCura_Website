@@ -1,7 +1,7 @@
 import styles from "./Why.module.css";
 
 /* 03 Why doctors sell: a pinned stage (740vh). The three reasons travel one at a time along an arc, the lit edge of a dome; the third stops at the top, all three settle at equal intervals, then the stage releases into the priced line and the quote.
-   The last 320vh of the stage carry 03 → 04, the next step of the build order. */
+   03 → 04 over the stage's last 320vh: the reasons, heading and quote fade; the dome rises; the gradient pulls back into the 4, and "Your" and "Options" arrive either side of it as it settles. 04 takes over on that frame. */
 
 const REASONS = [
   {
@@ -50,6 +50,10 @@ export default function Why() {
             <canvas data-dome-mesh="" className={styles.domeMesh} />
             <div data-dome-ov="" className={styles.domeOv} />
           </div>
+          {/* 03 → 04: the 4 in its own box, with its own gradient, under the dome's clip */}
+          <div data-t4clip="" className={styles.t4clip}>
+            <div data-t4box="" className={styles.t4box}><canvas data-t4mesh="" className={styles.t4mesh} /></div>
+          </div>
           {/* the arc: the lit edge of the dome, the line the reasons ride on */}
           <svg data-arc="" aria-hidden="true" viewBox="0 0 1000 400" preserveAspectRatio="none" className={styles.arc}>
             <path d="M0 400 Q500 -400 1000 400" className={styles.arcPath} />
@@ -74,6 +78,11 @@ export default function Why() {
         </div>
         <div data-s3-dots="" aria-hidden="true" className={styles.dots}>
           <span data-orb-dot="" className={styles.dot} /><span data-orb-dot="" className={styles.dot} /><span data-orb-dot="" className={styles.dot} />
+        </div>
+        {/* 03 → 04: copies of 04's "Your" and "Options", arriving either side of the 4 as it settles; 04's own heading carries the words */}
+        <div data-s3-words="" aria-hidden="true" className={styles.words}>
+          <span data-s3-wy="" className={`${styles.word} ${styles.wordYour}`}>Your</span>
+          <span data-s3-wo="" className={`${styles.word} ${styles.wordOptions}`}>Options</span>
         </div>
       </section>
     </div>
