@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { fontClassName } from "./fonts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
@@ -15,7 +16,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* the intro and the reveals hide words only once JavaScript runs: this flag is set before the first paint */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.setAttribute('data-js','')" }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Vercel Web Analytics: page views, without cookies (asked for 26 Oct 2026) */}
+        <Analytics />
+      </body>
     </html>
   );
 }
