@@ -3,6 +3,8 @@
 import { clamp } from "./math";
 import { SmoothScroll } from "./smooth-scroll";
 import { StageMotion } from "./stage";
+import { S3Motion } from "./s3";
+import { SectionDots } from "./sdots";
 
 export interface Progress {
   /** 0 at the top of the element's scroll, 1 at the end. */
@@ -26,8 +28,12 @@ export class Engine {
   t45D = 0;
   /** The hero stage is on screen; its canvases render only then. */
   stageOn = true;
-  /** The hero stage: the intro, the hero, the earth and the nav's states. */
+  /** The hero stage: the intro, the hero, the earth, the nav's states, and 02. */
   readonly stage: StageMotion;
+  /** 03: why doctors sell. */
+  readonly s3: S3Motion;
+  /** The dotted field behind 03–06. */
+  readonly sdots: SectionDots;
 
   private cache: Record<string, HTMLElement | HTMLElement[] | null> = {};
   private readonly written = new WeakMap<HTMLElement, Record<string, string>>();
@@ -59,6 +65,8 @@ export class Engine {
       this.scrollTo(this.anchorY(a.dataset.go || ""));
     };
     this.stage = new StageMotion(this);
+    this.s3 = new S3Motion(this);
+    this.sdots = new SectionDots(this);
   }
 
   start(): void {
@@ -80,6 +88,8 @@ export class Engine {
     window.removeEventListener("resize", this.handleResize);
     this.root.removeEventListener("click", this.handleClick);
     this.stage.destroy();
+    this.s3.destroy();
+    this.sdots.destroy();
     this.resizeHooks.clear();
     this.ss.destroy();
     document.documentElement.style.overflow = "";
@@ -159,5 +169,7 @@ export class Engine {
   /** The scroll choreography. Each section of the README's build order adds its part here, in page order. */
   tick(time: number): void {
     this.stage.tick(time);
+    this.s3.tick(time);
+    this.sdots.tick(time);
   }
 }
