@@ -1,4 +1,5 @@
 import Nav from "@/components/Nav";
+import Options from "@/components/Options";
 import Site from "@/components/Site";
 import Stage from "@/components/Stage";
 import Why from "@/components/Why";
@@ -10,6 +11,7 @@ export default function Page() {
       <Nav />
       <Stage />
       <Why />
+      <Options />
     </Site>
   );
 }

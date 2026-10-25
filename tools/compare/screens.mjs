@@ -7,7 +7,7 @@
    v5 plays its intro on every load, so from step 2 on pass --skip-intro, or the two pages are shot at different moments of it.
    The percent labels are offsets through the wrapper's pinned length; for [data-s4-wrap] and [data-h-wrap] v5's own progress differs a little (the 04 → 05 hold and the close's rest), but both pages are shot at identical offsets.
    Options: --ref URL (default http://localhost:3001), --build URL (default http://localhost:3000), --out DIR (default compare-out/<name>),
-            --step N (percent, default 5), --from N --to N (percent, default 0 and 100), --sizes 1280x720,1920x1080@2, --skip-intro (press "Skip intro" on both pages first). */
+            --step N (percent, default 5), --from N --to N (percent, default 0 and 100), --hold N (viewport heights at the end that are not the section's own progress; 04 has 3), --sizes 1280x720,1920x1080@2, --skip-intro (press "Skip intro" on both pages first). */
 import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
@@ -21,6 +21,7 @@ const STEP = Number(args.step || 5);
 const FROM = Number(args.from || 0), TO = Number(args.to == null ? 100 : args.to);
 const SECTION = typeof args.section === "string" ? args.section : null;
 const SKIP = !!args["skip-intro"];
+const HOLD = Number(args.hold || 0); // viewport heights at the end of the wrapper that are not part of its own progress (04: 3, its 04 → 05 hold)
 const SIZES = (typeof args.sizes === "string" ? args.sizes : "1280x720,1366x768,1440x900,1536x864,1920x1080,2560x1440,3840x2160,1920x1080@2")
   .split(",").map((s) => { const m = s.match(/^(\d+)x(\d+)(?:@(\d+))?$/); return { w: +m[1], h: +m[2], dpr: m[3] ? +m[3] : 1, label: s }; });
 
@@ -44,7 +45,7 @@ async function open(url, size) {
 // the scroll positions, measured on the page itself: the wrapper's top and its pinned length
 async function positions(page, vh) {
   if (!SECTION) return [{ pct: 0, y: 0 }];
-  const span = await page.evaluate((sel) => { const el = document.querySelector(sel); if (!el) return null; const r = el.getBoundingClientRect(); return { top: r.top + window.scrollY, len: r.height - window.innerHeight }; }, SECTION);
+  const span = await page.evaluate(([sel, hold]) => { const el = document.querySelector(sel); if (!el) return null; const r = el.getBoundingClientRect(); return { top: r.top + window.scrollY, len: r.height - window.innerHeight * (1 + hold) }; }, [SECTION, HOLD]);
   if (!span) throw new Error(`${SECTION} not found`);
   const out = [];
   for (let pct = FROM; pct <= TO; pct += STEP) out.push({ pct, y: Math.round(span.top + (span.len * pct) / 100) });

@@ -1,0 +1,65 @@
+/* v5's 04 markup (cross layout), value for value. The engine writes every box's place and size each frame; the starting states that hide words apply only once JavaScript runs (html[data-js]). */
+.host { margin-top: -100vh; }
+.wrap { position: relative; height: 1060vh; }
+/* with reduced motion 04 → 05 is off, and so is its 300vh hold */
+@media (prefers-reduced-motion: reduce) { .wrap { height: 760vh; } }
+.stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: #F8F8F6; }
+.defs { position: absolute; }
+.sdots { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; display: none; pointer-events: none; }
+
+.four { position: absolute; left: 0; top: 0; width: 68.284vh; height: 100vh; transform-origin: 0 0; will-change: transform; }
+.fourClip { position: absolute; inset: 0; clip-path: url(#c04); }
+.fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.words { position: absolute; top: 0; left: calc((100vw - 140.394vh) / 2); width: 140.394vh; height: 100vh; pointer-events: none; }
+.heading { margin: 0; }
+.word {
+  position: absolute; font-family: var(--fs); font-weight: 600; font-size: min(calc(244.1 / 16.24 * 1vh), 7.5vw);
+  line-height: 1; letter-spacing: -0.04em; color: #14171C; white-space: nowrap;
+}
+.wordYour { left: calc(-202.2 / 16.24 * 1vh); top: calc(234.3 / 16.24 * 1vh); }
+.wordOptions { left: calc(1705.4 / 16.24 * 1vh); top: calc(1153.7 / 16.24 * 1vh); }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+.cross { position: absolute; inset: 0; }
+.cwrap { position: absolute; inset: 0; clip-path: inset(100%); pointer-events: none; }
+.cq { position: absolute; left: 0; top: 0; }
+:global(html[data-js]) .cq { width: 0; height: 0; overflow: hidden; opacity: 0; }
+.clabel { position: absolute; inset: 0; pointer-events: none; }
+.cg { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: auto; cursor: pointer; }
+.cgSvg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ct {
+  position: absolute; left: 0; top: 0; margin: 0; width: max-content;
+  font-family: var(--fs); font-weight: 600; font-size: 52px; line-height: 1.02; letter-spacing: -0.03em; color: rgb(154, 160, 166);
+  text-wrap: balance; pointer-events: auto; cursor: pointer;
+}
+.square { display: inline-block; width: 0.2em; height: 0.2em; margin-left: 0.07em; background: linear-gradient(135deg, #2E6CB8, #34B3A5); }
+
+.cbody { position: absolute; left: 0; top: 0; width: 0; }
+.ctitle {
+  display: none; margin: 0 0 0.3em; font-family: var(--fs); font-weight: 600; font-size: var(--cTF); line-height: 1;
+  letter-spacing: -0.03em; color: #14171C; text-wrap: balance; pointer-events: none;
+}
+.clip { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.strong { font-weight: 600; color: #14171C; }
+.soft { font-weight: 400; color: #5A5F66; }
+.w { display: inline-block; }
+:global(html[data-js]) .w { transform: translateY(115%); }
+.lead {
+  margin: 0; font-family: var(--fs); font-weight: 500; font-size: var(--cLeadF); line-height: 1.18; letter-spacing: -0.02em;
+  text-wrap: balance; pointer-events: none;
+}
+.desc {
+  margin: 0.9em 0 0; padding-left: 1.1em;
+  background-image: linear-gradient(180deg, #2E6CB8, #34B3A5); background-repeat: no-repeat; background-position: 0 0.4em; background-size: 3px 0%;
+  font-family: var(--fs); font-size: var(--cDF); line-height: 1.55; color: #3F444B; text-wrap: pretty; pointer-events: none;
+}
+.ctaWrap { margin-top: 1.1rem; pointer-events: none; }
+:global(html[data-js]) .desc, :global(html[data-js]) .ctaWrap { opacity: 0; transform: translateY(14px); }
+.cta {
+  display: inline-flex; align-items: center; height: 2.75rem; padding: 0 1.3rem;
+  background: linear-gradient(100deg, #2E6CB8, #34B3A5) no-repeat 0 0 / 0% 100%, #14171C;
+  color: #F8F8F6; font-family: var(--fs); font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.01em; white-space: nowrap;
+  transition: background-size .55s cubic-bezier(.22, 1, .36, 1);
+}
+.cta:hover { background-size: 100% 100%, auto; color: #FFFFFF; }

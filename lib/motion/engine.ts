@@ -4,6 +4,7 @@ import { clamp } from "./math";
 import { SmoothScroll } from "./smooth-scroll";
 import { StageMotion } from "./stage";
 import { S3Motion } from "./s3";
+import { S4Motion } from "./s4";
 import { SectionDots } from "./sdots";
 
 export interface Progress {
@@ -34,12 +35,15 @@ export class Engine {
   readonly s3: S3Motion;
   /** The dotted field behind 03–06. */
   readonly sdots: SectionDots;
+  /** 04: your four options. */
+  readonly s4: S4Motion;
 
   private cache: Record<string, HTMLElement | HTMLElement[] | null> = {};
   private readonly written = new WeakMap<HTMLElement, Record<string, string>>();
   private readonly resizeHooks = new Set<() => void>();
   private raf = 0;
   private warned = false;
+  private warned4 = false;
   private readonly handleResize: () => void;
   private readonly handleClick: (ev: MouseEvent) => void;
 
@@ -67,6 +71,7 @@ export class Engine {
     this.stage = new StageMotion(this);
     this.s3 = new S3Motion(this);
     this.sdots = new SectionDots(this);
+    this.s4 = new S4Motion(this);
   }
 
   start(): void {
@@ -78,9 +83,12 @@ export class Engine {
       this.raf = requestAnimationFrame(loop);
       this.ss.update();
       try { this.tick(t); } catch (e) { if (!this.warned) { this.warned = true; console.warn(e); } }
+      // as in v5's loop: 04 steps after the page's own tick, guarded on its own
+      try { this.s4.tick(t); } catch (e) { if (!this.warned4) { this.warned4 = true; console.warn(e); } }
     };
     this.raf = requestAnimationFrame(loop);
     this.stage.boot();
+    this.s4.boot();
   }
 
   destroy(): void {
@@ -90,6 +98,7 @@ export class Engine {
     this.stage.destroy();
     this.s3.destroy();
     this.sdots.destroy();
+    this.s4.destroy();
     this.resizeHooks.clear();
     this.ss.destroy();
     document.documentElement.style.overflow = "";
@@ -116,6 +125,8 @@ export class Engine {
     return (this.cache[name] = Array.from(this.root.querySelectorAll<T>(sel))) as T[];
   }
   clearCache(): void { this.cache = {}; }
+  /** Forgets what was last written to an element, so the next set() writes again (after code that wrote to it directly). */
+  forget(el: HTMLElement | null | undefined): void { if (el) this.written.delete(el); }
   /** Writes a style only when it changes, so a frame that holds still costs nothing. `prop` is the camel-cased property (clipPath, pointerEvents). */
   set(el: HTMLElement | null | undefined, prop: string, val: string): void {
     if (!el) return;
@@ -168,6 +179,8 @@ export class Engine {
   // ---------- per frame ----------
   /** The scroll choreography. Each section of the README's build order adds its part here, in page order. */
   tick(time: number): void {
+    // 04 → 05 (setting A, off with reduced motion) holds 300vh at the end of 04 and pulls the next stage up 165vh; set first each frame, as v5's t45 does
+    const vh = window.innerHeight; this.t45Ex = this.reduced ? 0 : 3 * vh; this.t45D = this.reduced ? 0 : 1.65 * vh;
     // as in v5: the reveal words are placed before the stages read them
     this.s3.placeWords();
     this.stage.tick(time);
