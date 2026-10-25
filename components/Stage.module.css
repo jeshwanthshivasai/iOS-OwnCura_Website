@@ -1,0 +1,51 @@
+/* v5's stage markup, value for value. States the intro and the scroll set (opacity, clip paths, transforms) are written inline by the motion engine; the starting states of the words apply only once JavaScript runs (html[data-js]). */
+.wrap { position: relative; height: 900vh; }
+.stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: #ECEDEA; }
+.bg { position: absolute; inset: 0; background: #F8F8F6; opacity: 0; }
+.dots { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.globeWrap { position: absolute; inset: 0; opacity: 0; will-change: opacity; overflow: hidden; }
+.halo {
+  position: absolute; left: -10%; right: -10%; bottom: 0; height: 40vh;
+  background: linear-gradient(90deg, #2E6CB8, #34B3A5 55%, #6FC3DF);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0) 100%);
+  filter: blur(20px); opacity: 0; pointer-events: none; z-index: 0; transition: opacity 1.2s;
+}
+.globeSection {
+  position: absolute; left: 0; right: 0; top: 42vh; height: 100vh; min-height: 600px; overflow: hidden;
+  background: transparent; transform-origin: 50% 22%; will-change: transform; z-index: 1;
+}
+.map { position: absolute; inset: 0; z-index: 1; background: transparent; }
+
+.objBlur { position: absolute; inset: 0; opacity: 0; will-change: filter, opacity; pointer-events: none; }
+.objClip { position: absolute; inset: 0; clip-path: inset(100%); will-change: clip-path; }
+.mesh { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.heroContent { position: absolute; inset: 0; will-change: opacity, transform; pointer-events: none; }
+:global(html[data-js]) .heroContent { opacity: 0; }
+.title {
+  position: absolute; left: 2vw; right: 2vw; top: 0; bottom: 0; margin: 0;
+  text-align: center; white-space: nowrap;
+  font-family: var(--fd); font-weight: var(--fdw); letter-spacing: var(--fdt);
+  font-size: clamp(1.5rem, min(4.1vw, 9.2vh), 6.6rem); line-height: 1; color: #14171C; pointer-events: none;
+}
+/* line one: Schibsted Grotesk 600 at 10.2vh, 60.5vh from the bottom (line1Font, line1Size, line1Lift) */
+.line1 {
+  position: absolute; left: 0; right: 0; bottom: 60.5vh; display: block;
+  font-family: var(--fs); font-weight: 600; letter-spacing: -0.03em; font-size: 10.2vh;
+}
+/* line two: on the crossbar, 9.4vh, in the h1's own face */
+.line2 {
+  position: absolute; left: 0; right: 0; top: 42.9vh; height: 17.4vh;
+  display: flex; align-items: center; justify-content: center; font-size: 9.4vh;
+}
+:global(html[data-js]) .line1, :global(html[data-js]) .line2 { opacity: 0; transform: translateY(0.3em); }
+
+.skip {
+  position: absolute; right: 1.5rem; bottom: 1.5rem; z-index: 5;
+  border: 0; background: transparent; padding: 0.5rem 0;
+  font-family: var(--fm); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: #5A5F66; cursor: pointer;
+}
+.skip:hover { color: #14171C; }
+.skip[hidden] { display: none; }

@@ -7,7 +7,7 @@
    v5 plays its intro on every load, so from step 2 on pass --skip-intro, or the two pages are shot at different moments of it.
    The percent labels are offsets through the wrapper's pinned length; for [data-s4-wrap] and [data-h-wrap] v5's own progress differs a little (the 04 → 05 hold and the close's rest), but both pages are shot at identical offsets.
    Options: --ref URL (default http://localhost:3001), --build URL (default http://localhost:3000), --out DIR (default compare-out/<name>),
-            --step N (percent, default 5), --sizes 1280x720,1920x1080@2, --skip-intro (press "Skip intro" on both pages first). */
+            --step N (percent, default 5), --from N --to N (percent, default 0 and 100), --sizes 1280x720,1920x1080@2, --skip-intro (press "Skip intro" on both pages first). */
 import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
@@ -18,6 +18,7 @@ const BUILD = args.build || "http://localhost:3000";
 const NAME = args.name || "page";
 const OUT = args.out || path.join("compare-out", NAME);
 const STEP = Number(args.step || 5);
+const FROM = Number(args.from || 0), TO = Number(args.to == null ? 100 : args.to);
 const SECTION = typeof args.section === "string" ? args.section : null;
 const SKIP = !!args["skip-intro"];
 const SIZES = (typeof args.sizes === "string" ? args.sizes : "1280x720,1366x768,1440x900,1536x864,1920x1080,2560x1440,3840x2160,1920x1080@2")
@@ -46,7 +47,7 @@ async function positions(page, vh) {
   const span = await page.evaluate((sel) => { const el = document.querySelector(sel); if (!el) return null; const r = el.getBoundingClientRect(); return { top: r.top + window.scrollY, len: r.height - window.innerHeight }; }, SECTION);
   if (!span) throw new Error(`${SECTION} not found`);
   const out = [];
-  for (let pct = 0; pct <= 100; pct += STEP) out.push({ pct, y: Math.round(span.top + (span.len * pct) / 100) });
+  for (let pct = FROM; pct <= TO; pct += STEP) out.push({ pct, y: Math.round(span.top + (span.len * pct) / 100) });
   return out;
 }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { fontClassName } from "./fonts";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={fontClassName}>
+    <html lang="en" className={fontClassName} suppressHydrationWarning>
+      <head>
+        {/* the intro and the reveals hide words only once JavaScript runs: this flag is set before the first paint */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.setAttribute('data-js','')" }} />
+      </head>
       <body>{children}</body>
     </html>
   );

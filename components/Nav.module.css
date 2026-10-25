@@ -1,0 +1,37 @@
+/* v5's [data-nav] header and its hero nav. The initial hidden state applies only once JavaScript runs (html[data-js]): the intro fades the nav in. */
+.nav {
+  position: fixed; top: 1.1rem; left: 0; right: 0; z-index: 70;
+  display: flex; justify-content: center;
+  pointer-events: none;
+}
+:global(html[data-js]) .nav { opacity: 0; transform: translateY(-14px); }
+
+.heroNav {
+  position: absolute; left: 0; right: 0; top: -1.1rem; height: 100vh;
+  pointer-events: none; opacity: 1; visibility: visible; transition: opacity .3s;
+}
+.glass {
+  position: absolute; left: 0; right: 0; top: 0; height: 4.3rem;
+  background: rgba(248, 248, 246, 0.6);
+  backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  border-bottom: 1px solid rgba(20, 23, 28, 0.08);
+  opacity: 0; pointer-events: none;
+  transition: opacity .45s, transform .5s cubic-bezier(.22, 1, .36, 1);
+}
+.row {
+  position: absolute; left: calc(clamp(150px, 10vw, 220px) + 2vw); right: calc(clamp(150px, 10vw, 220px) + 2vw); top: 1.35rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+  pointer-events: auto;
+  transition: left .6s cubic-bezier(.22, 1, .36, 1), right .6s cubic-bezier(.22, 1, .36, 1), top .6s cubic-bezier(.22, 1, .36, 1), transform .5s cubic-bezier(.22, 1, .36, 1), opacity .35s;
+}
+.logo { display: inline-flex; align-items: center; gap: 0.6rem; color: #14171C; }
+.logo:hover { color: #14171C; }
+.mark { flex: none; }
+.word { font-family: var(--fs); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.025em; line-height: 1; color: #14171C; white-space: nowrap; }
+.cta {
+  display: inline-flex; align-items: center; height: 2.5rem; padding: 0 1.1rem;
+  background: linear-gradient(100deg, #2E6CB8, #34B3A5) no-repeat 0 0 / 0% 100%, #14171C;
+  color: #F8F8F6; font-family: var(--fs); font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.01em; white-space: nowrap;
+  transition: background-size .55s cubic-bezier(.22, 1, .36, 1), color .3s;
+}
+.cta:hover { background-size: 100% 100%, auto; color: #FFFFFF; }

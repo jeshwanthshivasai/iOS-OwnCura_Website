@@ -2,6 +2,7 @@
    Nothing per frame goes through React. Sections attach their choreography to `tick` in the README's build order. */
 import { clamp } from "./math";
 import { SmoothScroll } from "./smooth-scroll";
+import { StageMotion } from "./stage";
 
 export interface Progress {
   /** 0 at the top of the element's scroll, 1 at the end. */
@@ -25,6 +26,8 @@ export class Engine {
   t45D = 0;
   /** The hero stage is on screen; its canvases render only then. */
   stageOn = true;
+  /** The hero stage: the intro, the hero, the earth and the nav's states. */
+  readonly stage: StageMotion;
 
   private cache: Record<string, HTMLElement | HTMLElement[] | null> = {};
   private readonly written = new WeakMap<HTMLElement, Record<string, string>>();
@@ -32,6 +35,7 @@ export class Engine {
   private raf = 0;
   private warned = false;
   private readonly handleResize: () => void;
+  private readonly handleClick: (ev: MouseEvent) => void;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -43,10 +47,23 @@ export class Engine {
     if (fs) this.fonts.fs = fs;
     this.ss = new SmoothScroll({ enabled: this.fine && !this.reduced });
     this.handleResize = () => { this.resizeHooks.forEach((fn) => fn()); };
+    // "Skip intro" ends the intro; the nav's anchors (v5 go) end it too if it is running, then scroll to the anchor's place in the story
+    this.handleClick = (ev) => {
+      const t = ev.target as Element | null;
+      if (!t || !t.closest) return;
+      if (t.closest("[data-skip]")) { this.stage.finishIntro(); return; }
+      const a = t.closest<HTMLAnchorElement>("a[data-go]");
+      if (!a) return;
+      ev.preventDefault();
+      if (this.stage.introRunning) this.stage.finishIntro();
+      this.scrollTo(this.anchorY(a.dataset.go || ""));
+    };
+    this.stage = new StageMotion(this);
   }
 
   start(): void {
     window.addEventListener("resize", this.handleResize);
+    this.root.addEventListener("click", this.handleClick);
     // once the fonts are in, every measurement is taken again
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this.clearCache(); this.handleResize(); });
     const loop = (t: number) => {
@@ -55,11 +72,14 @@ export class Engine {
       try { this.tick(t); } catch (e) { if (!this.warned) { this.warned = true; console.warn(e); } }
     };
     this.raf = requestAnimationFrame(loop);
+    this.stage.boot();
   }
 
   destroy(): void {
     cancelAnimationFrame(this.raf);
     window.removeEventListener("resize", this.handleResize);
+    this.root.removeEventListener("click", this.handleClick);
+    this.stage.destroy();
     this.resizeHooks.clear();
     this.ss.destroy();
     document.documentElement.style.overflow = "";
@@ -116,6 +136,18 @@ export class Engine {
     return window.scrollY + rct.top + D + (q <= 0.912 ? q * So : q * So + H);
   }
   scrollTo(y: number): void { this.ss.scrollTo(y); }
+  /** Where each anchor of the nav and the footer lands (v5 goTop, goHow, goOptions, goPractices, goVal, goContact). */
+  anchorY(name: string): number {
+    const top = (sel: string, d = 0) => { const el = this.q(sel); return el ? window.scrollY + el.getBoundingClientRect().top + d : 0; };
+    switch (name) {
+      case "how": return this.stageY("[data-stage-wrap]", 0.31);
+      case "options": return top("[data-s4]", -40);
+      case "practices": return this.stageY("[data-h-wrap]", 0.2);
+      case "val": return this.stageY("[data-h-wrap]", 0.58);
+      case "contact": return top("#contact");
+      default: return 0;
+    }
+  }
   /** Fades an element in over its last `d` units of travel. */
   fadeUp(el: HTMLElement | null, k: number, d: number, unit: string): void {
     if (!el) return;
@@ -126,6 +158,6 @@ export class Engine {
   // ---------- per frame ----------
   /** The scroll choreography. Each section of the README's build order adds its part here, in page order. */
   tick(time: number): void {
-    void time;
+    this.stage.tick(time);
   }
 }
