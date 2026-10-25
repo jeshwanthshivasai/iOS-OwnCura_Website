@@ -3,7 +3,7 @@ import styles from "./HStage.module.css";
 
 /* 05, 06 and the close share one pinned stage (v5 [data-h-wrap], 1005vh, pulled up 265vh under the end of 04; 840vh and not pulled up with reduced motion).
    05: a gradient square, with a larger, left-aligned title over the statement (s5Square on). During 04 → 05 the stage rises under the veil and pins, and the gradient pulls back into the square.
-   This step builds 05 at rest, as v5 shows it at the hand-over: its words unfilled. Their filling word by word, 06 and the close follow in the build order. */
+   Its words start unfilled and fill word by word as the stage scrolls (lib/motion/h.ts). 06 and the close follow in the build order. */
 
 // the words, with the claims that take the brand gradient when they fill (v5 data-tclaim / data-claim)
 const TITLE: [string, boolean][] = [["What", false], ["we", false], ["own", true], ["and", false], ["run.", true]];

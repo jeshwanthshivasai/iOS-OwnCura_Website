@@ -1,7 +1,7 @@
-/* The 05-to-close stage (v5 [data-h-wrap]): 05, 06, the close and the footer. Built so far: its height and pull-up, and 05 at rest, centred in the space under the nav.
-   05's own timeline (its words filling), 05 → 06, 06, the close and the footer follow in the build order. */
+/* The 05-to-close stage (v5 [data-h-wrap]): 05, 06, the close and the footer. Built so far: its height and pull-up, 05 centred in the space under the nav, and 05's own timeline:
+   the title fills just ahead of the statement, then the statement fills word by word, the claims taking the brand gradient. 05 → 06, 06, the close and the footer follow in the build order. */
 import type { Engine } from "./engine";
-import { clamp } from "./math";
+import { clamp, range } from "./math";
 
 export class HMotion {
   private on = false;
@@ -20,6 +20,8 @@ export class HMotion {
     const Wv = window.innerWidth, Hv = window.innerHeight, Q = e.prog(wh, Hv);
     if (!(Q.on || this.on)) return;
     this.on = Q.on;
+    // the stage's own progress: it starts once 04 → 05's 165vh wait is over, and holds at q 0.912 for 80vh before the footer (v5 hq)
+    const q = Q.r ? e.hq(Q.r.top, Q.r.height, Hv, e.t45D) : Q.p;
     // 05 sits centred in the space under the nav: the title and the statement move together, measured once per layout
     const t5e = e.el("t5c", "[data-s5-title]"), s5e = e.el("s5c", "[data-stmt]");
     if (s5e) {
@@ -31,5 +33,11 @@ export class HMotion {
         [t5e, s5e].forEach((x) => { if (x) x.style.transform = "translateY(" + d5.toFixed(1) + "px)"; });
       }
     }
+    // the statement fills word by word over q 0.04–0.32 (v5 counts the words on screen, so a hidden copy never counts); a claim takes the gradient, the rest the ink
+    const sw = e.els("sw", "[data-sw]").filter((w) => w.offsetParent !== null), n = range(q, 0.04, 0.32) * sw.length;
+    sw.forEach((w, i) => { const on = i < n; if (w.hasAttribute("data-claim")) e.set(w, "webkitTextFillColor", on ? "transparent" : "#C9CCC7"); else e.set(w, "color", on ? "#14171C" : "#C9CCC7"); });
+    // the title fills just ahead of the statement (q 0–0.05); its verbs take the gradient like the claims below
+    const tw5 = e.els("tw5", "[data-tw]"), tn = range(q, 0, 0.05) * tw5.length;
+    tw5.forEach((w, i) => { const on = i < tn; if (w.hasAttribute("data-tclaim")) e.set(w, "webkitTextFillColor", on ? "transparent" : "#C9CCC7"); else e.set(w, "color", on ? "#14171C" : "#C9CCC7"); });
   }
 }
