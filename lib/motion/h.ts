@@ -3,13 +3,14 @@
    05 → 06 (setting A): 05's square grows into a full-bleed living gradient, 06 takes 05's place underneath, then the field bends first and sinks until it rests as the dome, 06's globe.
    06: the H measures the practice. The designer's frame at 1920 × 958, scaled to fit and centred; the uprights close in as the range tightens and the figures ride them.
    The close: 06 fades out over q 0.68–0.73 while the hero's paper and dots come up behind it, the H grows into the hero's frame over q 0.72–0.86 and its crossbar becomes the band,
-   and "Own what happens next." comes in over q 0.84–0.91, held at rest for 80vh at q 0.912. "Not an owner yet?" is placed and closed from here. The footer is the next step. */
+   and "Own what happens next." comes in over q 0.84–0.91, held at rest for 80vh at q 0.912. "Not an owner yet?" is placed and closed from here. Then the footer (lib/motion/foot.ts). */
 import type { Engine } from "./engine";
 import { clamp, lerp as L, range, smooth } from "./math";
 import { RECT, frameUW } from "./geometry";
 import { MeshGradient } from "../gl/mesh-gradient";
 import { DotField } from "../gl/dot-field";
 import { ownerStore } from "../owner";
+import { FootMotion } from "./foot";
 import { calc, valuationStore } from "../valuation";
 import { GRADIENT_COLORS, GRADIENT_SCALE, GRADIENT_SPEED, HERO_GRADIENT } from "../settings";
 
@@ -34,10 +35,11 @@ export class HMotion {
   private closeMeshSize = "";
   private cmWarm = false;
   private closeDots: DotField | null = null;
+  private readonly foot: FootMotion;
 
   private readonly place = () => this.placeOwner();
 
-  constructor(private readonly e: Engine) { ownerStore.place = this.place; }
+  constructor(private readonly e: Engine) { ownerStore.place = this.place; this.foot = new FootMotion(e); }
 
   /** The stage's height and pull-up from the same once-read reduced-motion setting as the 04 → 05 hold, as v5's applyToggles writes them; the CSS covers the first paint. */
   boot(): void {
@@ -46,7 +48,7 @@ export class HMotion {
   }
 
   destroy(): void {
-    if (this.domeMesh6) this.domeMesh6.destroy(); if (this.closeMesh) this.closeMesh.destroy(); if (this.closeDots) this.closeDots.destroy();
+    if (this.domeMesh6) this.domeMesh6.destroy(); if (this.closeMesh) this.closeMesh.destroy(); if (this.closeDots) this.closeDots.destroy(); this.foot.destroy();
     if (ownerStore.place === this.place) ownerStore.place = () => {};
   }
 
@@ -182,8 +184,10 @@ export class HMotion {
         if (lin) { e.set(lin, "opacity", (1 - Sm(Rg(f, 0.05, 0.6))).toFixed(3)); const gx0 = L(xl + o6, 0, f), gy0 = L(Y0 + oy6, 0, f), gx1 = L(xr + o6, Wv, f), gy1 = L(Y1 + oy6, Hv, f); e.set(lin, "backgroundSize", (gx1 - gx0).toFixed(1) + "px " + (gy1 - gy0).toFixed(1) + "px"); e.set(lin, "backgroundPosition", gx0.toFixed(1) + "px " + gy0.toFixed(1) + "px"); }
       }
     }
-    // "Own what happens next." comes in on the band over q 0.84–0.91 and takes the pointer once it is there (the footer, the next step, follows from q 0.915)
+    // "Own what happens next." comes in on the band over q 0.84–0.91 and takes the pointer once it is there; then the footer (lib/motion/foot.ts), as in v5's order
     { const ck = Sm(Rg(q, 0.84, 0.91)), cl = e.el("close", "[data-close]");
-      e.set(cl, "opacity", ck.toFixed(3)); e.set(cl, "transform", `translateY(${((1 - ck) * 18).toFixed(1)}px)`); e.set(cl, "pointerEvents", ck > 0.5 ? "auto" : "none"); }
+      e.set(cl, "opacity", ck.toFixed(3));
+      this.foot.tick(q, time, Wv, Hv, Rg, Sm);
+      e.set(cl, "transform", `translateY(${((1 - ck) * 18).toFixed(1)}px)`); e.set(cl, "pointerEvents", ck > 0.5 ? "auto" : "none"); }
   }
 }

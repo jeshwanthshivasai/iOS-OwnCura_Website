@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import Valuation from "./Valuation";
 import { OwnerButton } from "./Owner";
+import Footer from "./Footer";
 import styles from "./HStage.module.css";
 
 /* 05, 06 and the close share one pinned stage (v5 [data-h-wrap], 1005vh, pulled up 265vh under the end of 04; 840vh and not pulled up with reduced motion).
@@ -8,7 +9,8 @@ import styles from "./HStage.module.css";
    Its words start unfilled and fill word by word as the stage scrolls (lib/motion/h.ts).
    05 → 06: 05's square grows into a full-bleed living gradient, 06 takes 05's place underneath, and the field bends and sinks until it rests as the dome, 06's globe.
    06: the H measures the practice; the doctor fills in a sentence and the range tightens as the H's uprights close in.
-   The close: 06 fades, the H grows into the hero's frame and its crossbar becomes the band holding "Own what happens next.", held at rest for 80vh. The footer follows in the build order. */
+   The close: 06 fades, the H grows into the hero's frame and its crossbar becomes the band holding "Own what happens next.", held at rest for 80vh.
+   The footer: the line dissolves into the band; the description, the card and the links come up in the H's upper counter, the dotted name and the small print in the lower one. */
 
 // the words, with the claims that take the brand gradient when they fill (v5 data-tclaim / data-claim)
 const TITLE: [string, boolean][] = [["What", false], ["we", false], ["own", true], ["and", false], ["run.", true]];
@@ -55,9 +57,11 @@ export default function HStage() {
             <OwnerButton />
           </div>
         </div>
-        {/* the close: the H has grown into the hero's frame and its crossbar is the band holding the line; held at rest for 80vh before the footer (v5 [data-close]) */}
+        {/* the close: the H has grown into the hero's frame and its crossbar is the band holding the line; held at rest for 80vh, then the footer comes in (v5 [data-close]) */}
         <div data-close="" className={styles.close}>
           <h2 data-close-line="" className={styles.closeLine}>Own what happens next.</h2>
+          {/* the footer: it comes in over the band as the line dissolves */}
+          <Footer />
         </div>
       </section>
       {/* where "Start a practice" and Contact Us land: the stage's last screen (v5 #contact) */}

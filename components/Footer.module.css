@@ -1,0 +1,46 @@
+/* The footer (v5 lines 390-399, 408-424; the footerLinks switch is 7a, so v5's [data-fl-b] links are not built), value for value.
+   What only shows once the footer comes in is hidden only once JavaScript runs (README › SEO). */
+.fu { position: absolute; left: calc(clamp(150px, 10vw, 220px) + 2vw); right: calc(clamp(150px, 10vw, 220px) + 2vw); bottom: calc(57.1vh + 2vw); pointer-events: none; }
+:global(html[data-js]) .fu { opacity: 0; }
+.fuIn { width: 1082px; transform-origin: 0 100%; display: grid; grid-template-columns: max-content minmax(0, 1fr) 140px; row-gap: 29px; }
+.descRow { grid-column: 1; grid-row: 1; display: flex; align-items: stretch; gap: 11px; }
+.bar { width: 4px; flex: none; margin: -7px 0; background: linear-gradient(180deg, #2E6CB8, #34B3A5); }
+.desc { margin: 0; font-family: var(--fs); font-weight: 500; font-size: 22.23px; line-height: 1.1; letter-spacing: -0.02em; color: #14171C; white-space: nowrap; text-box: trim-both cap text; }
+.card {
+  grid-column: 1; grid-row: 2; justify-self: start; align-self: start; width: max-content; display: flex; flex-direction: column; align-items: flex-start;
+  padding: 30px; box-sizing: border-box; background: #FFFFFF; box-shadow: 0 16px 40px rgba(20, 23, 28, 0.12);
+}
+.cardHead { display: flex; align-items: center; gap: 4.62px; }
+.cardSquare { width: 16.5px; height: 16.5px; flex: none; background: linear-gradient(135deg, #2E6CB8, #34B3A5); }
+.cardTitle { margin: 0; font-family: var(--fs); font-weight: 500; font-size: 22px; line-height: 1.1; letter-spacing: -0.02em; color: #14171C; }
+.cardText { margin: 14px 0 0; font-family: var(--fs); font-size: 14px; line-height: 1.55; color: #3F444B; text-align: justify; text-align-last: justify; }
+.line { display: block; }
+.cta { margin-top: 22px; display: flex; align-items: stretch; height: 34px; cursor: pointer; }
+.ctaLabel { display: inline-flex; align-items: center; padding: 0 15px; background: #14171C; color: #F8F8F6; font-family: var(--fs); font-weight: 600; font-size: 13.5px; letter-spacing: -0.01em; white-space: nowrap; }
+.ctaPlusBox { width: 34px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #2E6CB8, #34B3A5); }
+.ctaPlus { position: relative; width: 12px; height: 12px; }
+.ctaPlusH { position: absolute; left: 0; top: 5.2px; width: 12px; height: 1.6px; background: #FFFFFF; }
+.ctaPlusV { position: absolute; left: 5.2px; top: 0; width: 1.6px; height: 12px; background: #FFFFFF; transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
+/* 7a: v5 writes display: flex here from the footerLinks switch */
+.links { grid-column: 3; grid-row: 2; display: flex; flex-direction: column; justify-content: space-between; }
+.link { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.mark {
+  width: 12px; height: 12px; flex: none; background: linear-gradient(135deg, #2E6CB8, #34B3A5);
+  clip-path: polygon(4.8px 0px, 7.2px 0px, 7.2px 4.8px, 4.8px 4.8px, 4.8px 0px, 7.2px 0px, 7.2px 4.8px, 12px 4.8px, 12px 7.2px, 7.2px 7.2px, 7.2px 12px, 4.8px 12px, 4.8px 7.2px, 7.2px 7.2px, 7.2px 12px, 4.8px 12px, 4.8px 7.2px, 0px 7.2px, 0px 4.8px, 4.8px 4.8px);
+  transition: clip-path .5s cubic-bezier(.22, 1, .36, 1);
+}
+.linkLabel { font-family: var(--fs); font-weight: 500; font-size: 18px; line-height: 1.1; letter-spacing: -0.01em; color: #14171C; white-space: nowrap; text-box: trim-both cap alphabetic; }
+
+.foot { position: absolute; left: clamp(150px, 10vw, 220px); right: clamp(150px, 10vw, 220px); top: 60.3vh; bottom: 0; }
+:global(html[data-js]) .foot { opacity: 0; }
+.dots { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.word { position: absolute; left: 2vw; right: 2vw; top: 4vh; height: 22vh; }
+.small { position: absolute; left: 2vw; right: 2vw; bottom: 0; height: 7.11vh; }
+:global(html[data-js]) .small { opacity: 0; }
+.rule { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(20, 23, 28, 0.14); }
+.smallRow {
+  position: absolute; left: 0; right: 0; bottom: calc(3.78vh - 2.9px); display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem;
+  font-family: var(--fs); font-size: 13px; line-height: 1; color: #5A5F66;
+}
+.ios { color: #5A5F66; }
+.ios:hover { color: #14171C; }
