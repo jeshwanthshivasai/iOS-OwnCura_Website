@@ -2,11 +2,14 @@
    05: centred under the nav; the title fills just ahead of the statement, then the statement word by word, the claims taking the brand gradient.
    05 → 06 (setting A): 05's square grows into a full-bleed living gradient, 06 takes 05's place underneath, then the field bends first and sinks until it rests as the dome, 06's globe.
    06: the H measures the practice. The designer's frame at 1920 × 958, scaled to fit and centred; the uprights close in as the range tightens and the figures ride them.
-   The close (06 fading out from q 0.68, the H growing into the hero's frame from q 0.72) and the footer are the next steps: until then `out` and `f` stay at rest. */
+   The close: 06 fades out over q 0.68–0.73 while the hero's paper and dots come up behind it, the H grows into the hero's frame over q 0.72–0.86 and its crossbar becomes the band,
+   and "Own what happens next." comes in over q 0.84–0.91, held at rest for 80vh at q 0.912. "Not an owner yet?" is placed and closed from here. The footer is the next step. */
 import type { Engine } from "./engine";
 import { clamp, lerp as L, range, smooth } from "./math";
 import { RECT, frameUW } from "./geometry";
 import { MeshGradient } from "../gl/mesh-gradient";
+import { DotField } from "../gl/dot-field";
+import { ownerStore } from "../owner";
 import { calc, valuationStore } from "../valuation";
 import { GRADIENT_COLORS, GRADIENT_SCALE, GRADIENT_SPEED, HERO_GRADIENT } from "../settings";
 
@@ -30,8 +33,11 @@ export class HMotion {
   private closeMesh: MeshGradient | null = null;
   private closeMeshSize = "";
   private cmWarm = false;
+  private closeDots: DotField | null = null;
 
-  constructor(private readonly e: Engine) {}
+  private readonly place = () => this.placeOwner();
+
+  constructor(private readonly e: Engine) { ownerStore.place = this.place; }
 
   /** The stage's height and pull-up from the same once-read reduced-motion setting as the 04 → 05 hold, as v5's applyToggles writes them; the CSS covers the first paint. */
   boot(): void {
@@ -39,7 +45,19 @@ export class HMotion {
     hw.style.marginTop = this.e.reduced ? "0px" : "-265vh"; hw.style.height = this.e.reduced ? "840vh" : "1005vh";
   }
 
-  destroy(): void { if (this.domeMesh6) this.domeMesh6.destroy(); if (this.closeMesh) this.closeMesh.destroy(); }
+  destroy(): void {
+    if (this.domeMesh6) this.domeMesh6.destroy(); if (this.closeMesh) this.closeMesh.destroy(); if (this.closeDots) this.closeDots.destroy();
+    if (ownerStore.place === this.place) ownerStore.place = () => {};
+  }
+
+  /** v5 placeOwner: the panel centred on the dome's button with its foot 14px above it (kept 16px inside the screen), and the button's copy laid exactly over the real one. */
+  placeOwner(): void {
+    const e = this.e, ob = e.q("[data-owner-link]"), pn = e.q("[data-m7]"), cb = e.q("[data-m7-btn]"); if (!ob || !pn) return;
+    const r = ob.getBoundingClientRect(), Wv = window.innerWidth, k = ob.offsetWidth ? r.width / ob.offsetWidth : 1;
+    if (cb) e.set(cb, "transform", "translate(" + r.left.toFixed(1) + "px," + r.top.toFixed(1) + "px) scale(" + k.toFixed(4) + ")");
+    const pw = pn.offsetWidth, ph = pn.offsetHeight, x = Math.max(16, Math.min(Wv - pw - 16, r.left + r.width / 2 - pw / 2)), y = Math.max(16, r.top - 14 - ph);
+    e.set(pn, "left", x.toFixed(1) + "px"); e.set(pn, "top", y.toFixed(1) + "px");
+  }
 
   tick(time: number): void {
     const e = this.e, wh = e.el("hwrap", "[data-h-wrap]"); if (!wh) return;
@@ -71,11 +89,14 @@ export class HMotion {
     tw5.forEach((w, i) => { const on = i < tn; if (w.hasAttribute("data-tclaim")) e.set(w, "webkitTextFillColor", on ? "transparent" : "#C9CCC7"); else e.set(w, "color", on ? "#14171C" : "#C9CCC7"); });
     // 06 takes the pointer while it is the scene; the specialty list sits above the dome while open, and closes when 06 leaves
     e.set(p6, "pointerEvents", q > 0.5 && q < 0.7 ? "auto" : "none");
-    e.set(p6, "zIndex", valuationStore.specOpen ? "4" : ""); if (valuationStore.specOpen && (q < 0.5 || q > 0.7)) valuationStore.closeSpec();
-    // the close (the next step): 06 fades out over q 0.68–0.73 and the H grows into the hero's frame over q 0.72–0.86; at rest until it is built
-    const out = 0, f = 0;
+    e.set(p6, "zIndex", valuationStore.specOpen ? "4" : ""); if (valuationStore.specOpen && (q < 0.5 || q > 0.7)) valuationStore.closeSpec(); if (ownerStore.get() && (q < 0.5 || q > 0.7)) ownerStore.closeFromFrame();
+    // the close: 06 fades out over q 0.68–0.73 and the H grows into the hero's frame over q 0.72–0.86
+    const out = Rg(q, 0.68, 0.73), f = Sm(Rg(q, 0.72, 0.86));
     e.els("p6in", "[data-p6-in]").forEach((x) => e.set(x, "opacity", (1 - out).toFixed(3)));
     e.set(e.el("p6title", "[data-p6-title]"), "opacity", (1 - out).toFixed(3));
+    // the hero's paper and its dot field come up behind the H as it grows (q 0.72–0.84)
+    const cbo = Sm(Rg(q, 0.72, 0.84)); e.set(e.el("closebg", "[data-close-bg]"), "opacity", cbo.toFixed(3));
+    if (cbo > 0.002) { if (!this.closeDots) { const cd = e.q<HTMLCanvasElement>("[data-close-dots]"); if (cd) { this.closeDots = new DotField(cd); this.closeDots.map = 0; this.closeDots.fade = 1; } } if (this.closeDots) this.closeDots.render(time); }
     // 06: the designer's 3a frame at 1920 × 958, scaled to fit and centred
     const s6 = Math.min(Wv / 1920, Hv / 958), ox6 = (Wv - 1920 * s6) / 2, oyF = (Hv - 958 * s6) / 2, oy6 = (1 - turn) * Hv, o6 = 0;
     { const tf6 = "translate(" + ox6.toFixed(2) + "px," + oyF.toFixed(2) + "px) scale(" + s6.toFixed(5) + ")"; e.set(e.el("f6", "[data-f6]"), "transform", tf6); e.set(e.el("f6b", "[data-f6b]"), "transform", tf6); }
@@ -143,10 +164,10 @@ export class HMotion {
         if (vis6 && this.domeMesh6) this.domeMesh6.render(time);
         // the owner button settles on the dome's centre once it is at rest
         const ol = e.el("olink6", "[data-olink]"), ob = e.el("olinkb", "[data-owner-link]"), bt = Sm(Rg(q, 0.49, 0.53));
-        if (ol) { e.set(ol, "top", (((apexR + Hv) / 2 - oyF) / s6 - 26).toFixed(1) + "px"); e.set(ol, "opacity", (bt * (1 - out)).toFixed(3)); e.set(ol, "transform", "translateY(" + ((1 - bt) * 24).toFixed(1) + "px)"); }
+        if (ol) { e.set(ol, "top", (((apexR + Hv) / 2 - oyF) / s6 - 26).toFixed(1) + "px"); e.set(ol, "opacity", (bt * (1 - out)).toFixed(3)); e.set(ol, "transform", "translateY(" + ((1 - bt) * 24).toFixed(1) + "px)"); if (ownerStore.get()) this.placeOwner(); }
         if (ob) e.set(ob, "pointerEvents", bt > 0.5 && q < 0.7 ? "auto" : "none");
       } }
-    // the H of 06, drawn by the frame layer the close grows into the hero's frame (f, the next step)
+    // the close: the same H grows into the hero's frame. The uprights run out to the screen edges and the crossbar becomes the band
     const cf = e.el("closeframe", "[data-close-frame]");
     if (cf) {
       if (turn <= 0.001) e.set(cf, "clipPath", "inset(100%)");
@@ -161,5 +182,8 @@ export class HMotion {
         if (lin) { e.set(lin, "opacity", (1 - Sm(Rg(f, 0.05, 0.6))).toFixed(3)); const gx0 = L(xl + o6, 0, f), gy0 = L(Y0 + oy6, 0, f), gx1 = L(xr + o6, Wv, f), gy1 = L(Y1 + oy6, Hv, f); e.set(lin, "backgroundSize", (gx1 - gx0).toFixed(1) + "px " + (gy1 - gy0).toFixed(1) + "px"); e.set(lin, "backgroundPosition", gx0.toFixed(1) + "px " + gy0.toFixed(1) + "px"); }
       }
     }
+    // "Own what happens next." comes in on the band over q 0.84–0.91 and takes the pointer once it is there (the footer, the next step, follows from q 0.915)
+    { const ck = Sm(Rg(q, 0.84, 0.91)), cl = e.el("close", "[data-close]");
+      e.set(cl, "opacity", ck.toFixed(3)); e.set(cl, "transform", `translateY(${((1 - ck) * 18).toFixed(1)}px)`); e.set(cl, "pointerEvents", ck > 0.5 ? "auto" : "none"); }
   }
 }

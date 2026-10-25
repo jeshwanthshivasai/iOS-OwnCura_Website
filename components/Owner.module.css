@@ -1,0 +1,37 @@
+/* "Not an owner yet?" (v5 lines 386 and 431-437), value for value. The panel's link parts its plus on hover through v5's onMouseEnter/onMouseLeave (plusOn/plusOff), done in script. */
+
+/* the dome's button and its copy */
+.btn { pointer-events: none; display: flex; align-items: stretch; height: 52px; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.label { display: inline-flex; align-items: center; padding: 0 24px; background: #14171C; color: #F8F8F6; font-family: var(--fs); font-weight: 600; font-size: 19px; letter-spacing: -0.01em; white-space: nowrap; }
+.plusBox { width: 52px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: #F8F8F6; }
+.plus { position: relative; width: 14px; height: 14px; transition: transform .5s cubic-bezier(.87, 0, .13, 1); }
+.plusH { position: absolute; left: 0; top: 6px; width: 14px; height: 2px; background: #14171C; }
+.plusV { position: absolute; left: 6px; top: 0; width: 2px; height: 14px; background: #14171C; }
+.plusMove { transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
+.copy { position: fixed; z-index: 92; left: 0; top: 0; transform-origin: 0 0; display: flex; align-items: stretch; height: 52px; border: 0; padding: 0; background: transparent; cursor: pointer; }
+
+/* the dim over the page */
+.dim {
+  position: fixed; inset: 0; z-index: 90; background: rgba(20, 23, 28, 0.2); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: opacity .45s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* the panel */
+.panel {
+  position: fixed; z-index: 91; left: 0; top: 0; width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: flex-start; padding: 26px 28px 28px; background: #FFFFFF; box-shadow: 0 24px 64px rgba(20, 23, 28, 0.2);
+  transition: clip-path .6s cubic-bezier(.22, 1, .36, 1);
+}
+.head { display: flex; align-items: center; gap: 10px; }
+.square { width: 20px; height: 20px; flex: none; background: linear-gradient(135deg, #2E6CB8, #34B3A5); }
+.title { margin: 0; font-family: var(--fs); font-weight: 500; font-size: 28px; line-height: 1.1; letter-spacing: -0.02em; color: #14171C; }
+.yet { background: linear-gradient(100deg, #2E6CB8, #34B3A5); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.body { align-self: stretch; margin-top: 16px; display: flex; align-items: stretch; gap: 12px; }
+.bar { width: 3px; flex: none; background: linear-gradient(180deg, #2E6CB8, #34B3A5); }
+.text { margin: 0; font-family: var(--fs); font-size: 15px; line-height: 1.55; color: #3F444B; text-wrap: pretty; }
+.cta { margin-top: 20px; display: flex; align-items: stretch; height: 40px; cursor: pointer; }
+.ctaLabel { display: inline-flex; align-items: center; padding: 0 18px; background: #14171C; color: #F8F8F6; font-family: var(--fs); font-weight: 600; font-size: 15px; letter-spacing: -0.01em; white-space: nowrap; }
+.ctaPlusBox { width: 40px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #2E6CB8, #34B3A5); }
+.ctaPlus { position: relative; width: 12px; height: 12px; }
+.ctaPlusH { position: absolute; left: 0; top: 5.2px; width: 12px; height: 1.6px; background: #FFFFFF; }
+.ctaPlusV { position: absolute; left: 5.2px; top: 0; width: 1.6px; height: 12px; background: #FFFFFF; transition: transform .5s cubic-bezier(.22, 1, .36, 1); }

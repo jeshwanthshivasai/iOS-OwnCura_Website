@@ -1,12 +1,14 @@
 import { Fragment } from "react";
 import Valuation from "./Valuation";
+import { OwnerButton } from "./Owner";
 import styles from "./HStage.module.css";
 
 /* 05, 06 and the close share one pinned stage (v5 [data-h-wrap], 1005vh, pulled up 265vh under the end of 04; 840vh and not pulled up with reduced motion).
    05: a gradient square, with a larger, left-aligned title over the statement (s5Square on). During 04 → 05 the stage rises under the veil and pins, and the gradient pulls back into the square.
    Its words start unfilled and fill word by word as the stage scrolls (lib/motion/h.ts).
    05 → 06: 05's square grows into a full-bleed living gradient, 06 takes 05's place underneath, and the field bends and sinks until it rests as the dome, 06's globe.
-   06: the H measures the practice; the doctor fills in a sentence and the range tightens as the H's uprights close in. The close and the footer follow in the build order. */
+   06: the H measures the practice; the doctor fills in a sentence and the range tightens as the H's uprights close in.
+   The close: 06 fades, the H grows into the hero's frame and its crossbar becomes the band holding "Own what happens next.", held at rest for 80vh. The footer follows in the build order. */
 
 // the words, with the claims that take the brand gradient when they fill (v5 data-tclaim / data-claim)
 const TITLE: [string, boolean][] = [["What", false], ["we", false], ["own", true], ["and", false], ["run.", true]];
@@ -27,6 +29,8 @@ export default function HStage() {
   return (
     <div id="practices" data-h-wrap="" className={styles.wrap}>
       <section className={styles.stage}>
+        {/* the close: the hero's paper and dot field come up behind the H as it grows into the frame (v5 [data-close-bg]) */}
+        <div data-close-bg="" aria-hidden="true" className={styles.closeBg}><canvas data-close-dots="" className={styles.fill} /></div>
         <div data-p5="" className={styles.p5}>
           <canvas data-sdots="05" aria-hidden="true" className={styles.sdots} />
           <div data-s5-title="" className={styles.title}>
@@ -46,19 +50,18 @@ export default function HStage() {
         {/* 05 → 06: 05's square grows into a full-bleed living gradient, then bends and sinks to rest as 06's dome */}
         <div data-dome6="" aria-hidden="true" className={styles.dome6}><canvas data-dome6-mesh="" className={styles.fill} /><div data-dome6-flat="" className={styles.dome6Flat} /><div data-dome6-veil="" className={styles.dome6Veil} /></div>
         <div data-f6b="" className={styles.f6b}>
-          {/* the owner button settles on the dome's centre; the panel it opens comes with the close (step 10) */}
+          {/* the owner button settles on the dome's centre; it opens "Not an owner yet?" (components/Owner.tsx) */}
           <div data-olink="" className={styles.olink}>
-            <button type="button" data-owner-link="" className={styles.ownerBtn}>
-              <span className={styles.ownerLabel}>Not an owner yet?</span>
-              <span aria-hidden="true" className={styles.ownerPlusBox}>
-                <span className={styles.ownerPlus}>
-                  <span className={styles.plusH} /><span data-pl="" data-d="6" className={styles.plusV} /><span data-pr="" data-d="6" className={styles.plusV} />
-                </span>
-              </span>
-            </button>
+            <OwnerButton />
           </div>
         </div>
+        {/* the close: the H has grown into the hero's frame and its crossbar is the band holding the line; held at rest for 80vh before the footer (v5 [data-close]) */}
+        <div data-close="" className={styles.close}>
+          <h2 data-close-line="" className={styles.closeLine}>Own what happens next.</h2>
+        </div>
       </section>
+      {/* where "Start a practice" and Contact Us land: the stage's last screen (v5 #contact) */}
+      <div id="contact" aria-hidden="true" className={styles.contact} />
     </div>
   );
 }

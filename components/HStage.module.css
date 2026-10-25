@@ -38,9 +38,14 @@
 .f6b { position: absolute; left: 0; top: 0; width: 1920px; height: 958px; transform-origin: 0 0; pointer-events: none; }
 .olink { position: absolute; left: 0; right: 0; top: 804px; display: flex; justify-content: center; pointer-events: none; }
 :global(html[data-js]) .olink { opacity: 0; }
-.ownerBtn { pointer-events: none; display: flex; align-items: stretch; height: 52px; border: 0; padding: 0; background: transparent; cursor: pointer; }
-.ownerLabel { display: inline-flex; align-items: center; padding: 0 24px; background: #14171C; color: #F8F8F6; font-family: var(--fs); font-weight: 600; font-size: 19px; letter-spacing: -0.01em; white-space: nowrap; }
-.ownerPlusBox { width: 52px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: #F8F8F6; }
-.ownerPlus { position: relative; width: 14px; height: 14px; transform: rotate(0deg); transition: transform .5s cubic-bezier(.87, 0, .13, 1); }
-.plusH { position: absolute; left: 0; top: 6px; width: 14px; height: 2px; background: #14171C; }
-.plusV { position: absolute; left: 6px; top: 0; width: 2px; height: 14px; background: #14171C; transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
+
+/* the close (v5 lines 364, 388-389 and 426), value for value; its line is hidden only once JavaScript runs (README › SEO) */
+.closeBg { position: absolute; inset: 0; background: #ECEDEA; opacity: 0; }
+.close { position: absolute; inset: 0; pointer-events: none; }
+:global(html[data-js]) .close { opacity: 0; }
+.closeLine {
+  position: absolute; left: calc(clamp(150px, 10vw, 220px) + 2vw); right: calc(clamp(150px, 10vw, 220px) + 2vw); top: 42.9vh; height: 17.4vh; margin: 0;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-family: var(--fs); font-weight: 500; font-size: clamp(2rem, 4.8vw, 5.75rem); line-height: 1; letter-spacing: -0.03em; color: #14171C; white-space: nowrap;
+}
+.contact { position: absolute; left: 0; bottom: 0; width: 1px; height: 100vh; pointer-events: none; }
